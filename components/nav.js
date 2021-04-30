@@ -2,7 +2,7 @@ import Link from "next/link";
 
 const links = [
   {
-    href: "https://github.com/andreaskeller/nextjs-google-sheets-cms.git",
+    href:"https://github.com/tnobile/my-next-gsheet-cms",
     label: "GitHub",
   },
   {
