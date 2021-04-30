@@ -1,82 +1,57 @@
-import Head from 'next/head'
+import Nav from "../components/nav";
+import { getWhyNextReasons } from "../lib/api";
 
-export default function Home() {
+/* https://andreaskeller.name/blog/nextjs-google-sheets-cms */
+export default function IndexPage({ reasons }) {
   return (
-    <div className="flex flex-col items-center justify-center min-h-screen py-2">
-      <Head>
-        <title>Create Next App</title>
-        <link rel="icon" href="/favicon.ico" />
-      </Head>
-
-      <main className="flex flex-col items-center justify-center flex-1 px-20 text-center">
-        <h1 className="text-6xl font-bold">
-          Welcome to{' '}
-          <a className="text-blue-600" href="https://nextjs.org">
-            Next.js!
-          </a>
+    <div>
+      <Nav />
+      <div className="container mx-auto py-20 px-8">
+        <h1 className="text-5xl text-center text-accent-1 mb-16">
+          Why Next.js?
         </h1>
 
-        <p className="mt-3 text-2xl">
-          Get started by editing{' '}
-          <code className="p-3 font-mono text-lg bg-gray-100 rounded-md">
-            pages/index.js
-          </code>
-        </p>
-
-        <div className="flex flex-wrap items-center justify-around max-w-4xl mt-6 sm:w-full">
-          <a
-            href="https://nextjs.org/docs"
-            className="p-6 mt-6 text-left border w-96 rounded-xl hover:text-blue-600 focus:text-blue-600"
-          >
-            <h3 className="text-2xl font-bold">Documentation &rarr;</h3>
-            <p className="mt-4 text-xl">
-              Find in-depth information about Next.js features and API.
-            </p>
-          </a>
-
-          <a
-            href="https://nextjs.org/learn"
-            className="p-6 mt-6 text-left border w-96 rounded-xl hover:text-blue-600 focus:text-blue-600"
-          >
-            <h3 className="text-2xl font-bold">Learn &rarr;</h3>
-            <p className="mt-4 text-xl">
-              Learn about Next.js in an interactive course with quizzes!
-            </p>
-          </a>
-
-          <a
-            href="https://github.com/vercel/next.js/tree/master/examples"
-            className="p-6 mt-6 text-left border w-96 rounded-xl hover:text-blue-600 focus:text-blue-600"
-          >
-            <h3 className="text-2xl font-bold">Examples &rarr;</h3>
-            <p className="mt-4 text-xl">
-              Discover and deploy boilerplate example Next.js projects.
-            </p>
-          </a>
-
-          <a
-            href="https://vercel.com/import?filter=next.js&utm_source=create-next-app&utm_medium=default-template&utm_campaign=create-next-app"
-            className="p-6 mt-6 text-left border w-96 rounded-xl hover:text-blue-600 focus:text-blue-600"
-          >
-            <h3 className="text-2xl font-bold">Deploy &rarr;</h3>
-            <p className="mt-4 text-xl">
-              Instantly deploy your Next.js site to a public URL with Vercel.
-            </p>
-          </a>
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+          {reasons
+            .slice(0, reasons.length - 1)
+            .map(({ title, description, href }) => (
+              <a
+                className="border border-grey-200 rounded p-4 hover:shadow-lg hover:border-transparent"
+                key={title}
+                href={href}
+                target="_blank"
+              >
+                <h3 className="font-bold mb-2">{title}</h3>
+                <div dangerouslySetInnerHTML={{ __html: description }} />
+                <span className="text-blue-600 hover:text-blue-400 hover:underline mt-4 block">
+                  {href && href.split('/').pop()}→
+                </span>
+              </a>
+            ))}
         </div>
-      </main>
-
-      <footer className="flex items-center justify-center w-full h-24 border-t">
-        <a
-          className="flex items-center justify-center"
-          href="https://vercel.com?utm_source=create-next-app&utm_medium=default-template&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Powered by{' '}
-          <img src="/vercel.svg" alt="Vercel Logo" className="h-4 ml-2" />
-        </a>
-      </footer>
+        <div className="text-center mt-8">
+          {reasons.slice(reasons.length - 1).map(({ title, description }) => (
+            <div className="markdown inline-p">
+              <strong>{title}</strong>{" "}
+              <span dangerouslySetInnerHTML={{ __html: description }} />
+            </div>
+          ))}
+        </div>
+      </div>
     </div>
-  )
+  );
+}
+
+export async function getStaticProps(context) {
+  const reasons = await getWhyNextReasons();
+
+  return {
+    props: {
+      reasons,
+    },
+    // Next.js will attempt to re-generate the page:
+    // - When a request comes in
+    // - At most once every second
+    revalidate: 1, // In seconds
+  };
 }
